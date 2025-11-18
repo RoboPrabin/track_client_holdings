@@ -10,12 +10,25 @@ import streamlit as st
 import pandas as pd
 import sqlalchemy 
 
-
 st = hide_components()
+st.set_page_config(
+    page_title="Live Client Holdings-TSL",  
+    page_icon="📊",                          
+    layout="wide"                            
+)
+
+
+# Handle logout logic
+if st.query_params.get("logout") == "true":
+    hide_components()
+    st.session_state.logged_in = False
+    st.session_state.role = None
+    st.switch_page("login.py")
+
+
 
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.error("Unauthorized access. Please login first.")
-
     # 👉 Button redirect BEFORE stop()
     if st.button("Go to Login Page"):
         st.switch_page("login.py")
@@ -27,11 +40,6 @@ def load_data():
     engine = sqlalchemy.create_engine(f"postgresql+psycopg2://{config.postgresql_config['db_user']}:{config.postgresql_config['db_password']}@{config.postgresql_config['db_host']}:{config.postgresql_config['db_port']}/{config.postgresql_config['db_name']}")
     return pd.read_sql("SELECT * FROM holdings", engine)
 
-st.set_page_config(
-    page_title="Live Client Holdings-TSL",  
-    page_icon="📊",                          
-    layout="wide"                            
-)
 
 
 st.markdown(
@@ -72,11 +80,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Handle logout logic
-if st.query_params.get("logout") == "true":
-    st.session_state.logged_in = False
-    st.session_state.role = None
-    st.switch_page("login.py")
 
 
 
@@ -96,7 +99,7 @@ df = df.drop(columns=['Id', 'Username' , 'Dp', 'Isin', 'REMARKS', 'SCRIPTDESC', 
 
 
 df = df.sort_values(by='Name').reset_index(drop=True)
-column_order = ['Name', 'Boid', 'Client Code', 'Ledger Balance', 'Script', 'Ltp', 'Market Value', 'Profit Loss', 'Profit Loss Percentage']
+column_order = ['Bro','Name', 'Boid', 'Client Code', 'Ledger Balance', 'Script', 'Ltp', 'Market Value', 'Profit Loss', 'Profit Loss Percentage']
 df = df[column_order + [col for col in df.columns if col not in column_order]]
 
 for col in df.columns:
@@ -159,7 +162,6 @@ if search:
     df_filtered = df[mask]
 else:
     df_filtered = df
-
 
 st.dataframe(df_filtered, width='content')
 

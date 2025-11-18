@@ -15,7 +15,7 @@ class ManagerSummaryPage:
         self.render_header()
         df = self.load_data()
         df = self.format_dataframe(df)
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
 
     def render_header(self):
         if st.button("⬅️ Go to Dashboard"):

@@ -15,7 +15,7 @@ class BroSummaryPage:
         self.render_header()
         df = self.load_data()
         df = self.format_dataframe(df)
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
 
     def render_header(self):
         if st.button("⬅️ Go to Dashboard"):
@@ -23,9 +23,7 @@ class BroSummaryPage:
         st.title("🙎🏻 BRO Summary")
 
     def load_data(self):
-        engine = sqlalchemy.create_engine(
-            f"postgresql+psycopg2://{config.postgresql_config['db_user']}:{config.postgresql_config['db_password']}@{config.postgresql_config['db_host']}:{config.postgresql_config['db_port']}/{config.postgresql_config['db_name']}"
-        )
+        engine = sqlalchemy.create_engine(helper.get_engine_connection_holding_db())
         return pd.read_sql("SELECT * FROM bro_summary", engine)
 
     def format_dataframe(self, df):
