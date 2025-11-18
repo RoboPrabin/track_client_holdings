@@ -1,0 +1,62 @@
+from pathlib import Path
+PROJECT_PATH = r"D:\Trishakti\Projects\RPA\track_stock_price"
+
+CLIENT_DATA_FILEPATH = PROJECT_PATH + r"\data\input\client_data.xlsx"
+OUTPUT_CLIENT_DATA_FILEPATH = PROJECT_PATH + r"\data\output\holdings.xlsx"
+OUTPUT_CLIENT_DATA_FILEPATH_FINAL = PROJECT_PATH + r"\data\output\holdings_FINAL.xlsx"
+
+MEROSHARE_URL = "https://meroshare.cdsc.com.np/#/login"
+
+# Create output directory
+output_folder_path = PROJECT_PATH + r"\data\output"
+
+_REFRESH_TIME_IN_SECONDS = 32
+
+postgresql_config = {
+    "db_user": "postgres",
+    "db_password" : "admin",
+    "db_host" : "localhost" ,        
+    "db_port" : "5432",          
+    "db_name" : "client_holdings"
+}
+
+
+
+
+
+# Get Desktop path
+desktop_path = Path.home() / "Desktop"
+cost_benefit_project_path = desktop_path / "server" / "RPA" / "Cost Benefit"
+mis_project_path = desktop_path / "server" / "RPA" / "MIS"
+
+
+# SESSION MANAGEMENT
+rpa_session_management_default_path = (
+    desktop_path / "server" / "RPA" / "SessionManagement"
+)
+session_management_path_tms = (
+    rpa_session_management_default_path / "TMS" / "cookies_tms.json"
+)
+session_management_path_tms_cookies = (
+    rpa_session_management_default_path / "TMS" / "cookies_tms.pkl"
+)
+session_management_path_tms_session_id_path = (
+    rpa_session_management_default_path / "TMS" / "session_id.txt"
+)
+cookies_management_path_dg = (
+    rpa_session_management_default_path / "DG" / "cookies_dg.pkl"
+)
+
+session_management_path_dg = (
+    rpa_session_management_default_path / "DG" / "local_storage_dg.pkl"
+)
+session_management_path_global_ime = (
+    rpa_session_management_default_path / "GLOBALBANK" / "local_storage_global_ime.json"
+)
+
+
+url_login_dgtrade = "https://dgtrade.trishakti.com.np:8080/bom/index.html#/login"
+# DG CREDENTIALS
+credentials_dg = {"username": "PRABIN", "password": "Trishakti@48"}
+
+chrome_profile_bot_dg = r"D:\Profile\ChromeProfileBotChatBot"
