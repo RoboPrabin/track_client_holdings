@@ -6,30 +6,21 @@ import io
 from utils import page_url
 from utils.helper import camel_to_title, format_with_comma, hide_components, get_holding_engine
 from utils import helper
+from app_state import require_login, current_user
+import navigation
 
-
-
-
-# ---------------------------------------------------------
-# PAGE CONFIG MUST BE THE FIRST STREAMLIT COMMAND
-# ---------------------------------------------------------
+# st.set_page_config(page_title="Dashboard")
 st.set_page_config(
-    page_title="Live Client Holdings - TSL",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state='collapsed'
+    page_title="Dashboard",
+    page_icon="🏠",
+    layout="wide"
 )
 
-# helper.hide_login_page()
 
+require_login()            # Redirect to login if not authenticated
+navigation.render_sidebar()  # Sidebar menus
 
-# ---------------------------------------------------------
-# AUTHENTICATION CHECK
-# ---------------------------------------------------------
-if not st.session_state.get("logged_in", False):
-    st.switch_page(page_url.login_url)
-
-
+user = current_user()
 
 # ---------------------------------------------------------
 # LOAD DATA
@@ -102,7 +93,7 @@ output = io.BytesIO()
 df.to_excel(output, index=False, engine="openpyxl")
 output.seek(0)
 
-role = st.session_state.get("role", "").upper()
+role = current_user().get("role", "").upper()
 if role in helper.get_hero_role():
     st.download_button("📥 Download XLSX", data=output, file_name="client_holdings_TSL.xlsx", width='content')
 

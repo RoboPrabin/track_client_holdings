@@ -1,0 +1,10 @@
+#[theme]
+#primaryColor="#F63366"
+
+# This completely hides the automatic pages in the sidebar
+#[server]
+#showSidebarNavigation = false
+
+
+[client]
+showErrorDetails = false
