@@ -12,7 +12,7 @@ class BroExtractor:
         df_excel = pd.read_excel(excel_path)
 
         # Step 2: Connect to PostgreSQL
-        engine = create_engine(helper.get_engine_connection_intranet_db())
+        engine = create_engine(helper.get_intranet_engine())
         df_client_rm = pd.read_sql("SELECT client_code, rm_id FROM client_rm", engine)
         df_rm = pd.read_sql("SELECT u_id, rm_name, rm_fname FROM rm_tbl", engine)
 
@@ -32,6 +32,7 @@ class BroExtractor:
         df_final.drop(columns=['client_code'], inplace=True)
         # Step 7: Fill missing Bro values with "N/A"
         df_final['bro'] = df_final['bro'].fillna("N/A")
+        df_final['clientCode'] = df_final['clientCode'].fillna("N/A")
         helper.convert_columns_to_str(df=df_final)
         # Step 8: Save enriched Excel file
         # output_path = r"D:\Trishakti\Projects\RPA\track_stock_price\data\output\holdings_with_bro.xlsx"

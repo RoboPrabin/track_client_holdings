@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from config import config
 from utils import helper
 
@@ -28,9 +28,9 @@ class ManagerSummaryExtractor:
             'name': 'clientName',
             'username': 'clientCode',
             'marketValue': 'currentMarketValue',
-            'profitLoss': 'unrealisedProfitLoss',
+            'profitLoss': 'realisedProfitLoss',
             'profitLossPercentage': 'profitLossPercentage',
-            'ledgerBalance': 'totalLedgerBalance',
+            'ledgerBalance': 'ledgerValue',
             'totalPurchaseCost': 'assetsUnderCustody'
         }, inplace=True)
 
@@ -44,50 +44,26 @@ class ManagerSummaryExtractor:
         # Step 5: Create broName
         df_merged['bro'] = df_merged['rm_name'].fillna('N/A') + ' ' + df_merged['rm_fname'].fillna('')
 
-        # Step 6: Aggregate by BRO
-        bro_summary = df_merged.groupby('bro').agg({
-            'clientCode': 'nunique',
-            'assetsUnderCustody': 'sum',
-            'currentMarketValue': 'sum',
-            'unrealisedProfitLoss': 'sum',
-            'totalLedgerBalance': 'sum',
-        }).reset_index()
+        # Step 6: Reorder and select columns for manager summary
+        manager_summary = df_merged[[
+            'bro',
+            'clientCode',
+            'clientName',
+            'assetsUnderCustody',
+            'currentMarketValue',
+            'realisedProfitLoss'
+        ]].copy()
 
-        bro_summary.rename(columns={
-            'clientCode': 'totalClients'
-        }, inplace=True)
+        # Optional: Add unrealisedProfitLoss as placeholder
+        manager_summary['unrealisedProfitLoss'] = "N/A"
 
         # Step 7: Save to Excel
         output_path = r"D:\Trishakti\Projects\RPA\track_stock_price\data\output\manager_summary.xlsx"
-        bro_summary.to_excel(output_path, index=False)
-        print("✅ Manager summary with BRO-level aggregation created successfully!")
+        manager_summary.to_excel(output_path, index=False)
 
-        # Step 8: Push to DB
+        print("✅ Manager summary with client details created successfully!")
         engine = create_engine(helper.get_holding_engine())
+        # Push to bro_summary table (append or replace as needed)
+        manager_summary.to_sql("manager_summary", engine, if_exists="replace", index=False)
+        print("✅ Summary file created and pushed to manager_summary table in client_holdings DB!")
 
-        bro_summary.to_sql("manager_summary2", engine, if_exists="replace", index=False)
-        print("✅ Summary file pushed to manager_summary table in client_holdings DB!")
-
-        engine = create_engine(helper.get_holding_engine())
-
-        with engine.begin() as conn:
-            # Step 1: Drop the columns
-            conn.execute(text("""
-                ALTER TABLE manager_summary2
-                DROP COLUMN "usedLimit",
-                DROP COLUMN "totalLimit",
-                DROP COLUMN "availableLimit";
-            """))
-
-            # Step 2: Add generated column
-            conn.execute(text("""
-                ALTER TABLE manager_summary2
-                ADD COLUMN "availableLimit" NUMERIC GENERATED ALWAYS AS ("totalLimit" - "usedLimit") STORED;
-            """))
-
-        print("✅ Columns dropped and 'availableLimit' added as a generated column.")
-
-
-
-if __name__ == "__main__":
-    ManagerSummaryExtractor().extract_manager_summary()

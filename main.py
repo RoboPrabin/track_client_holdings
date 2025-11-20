@@ -243,14 +243,14 @@ class MeroshareBot:
 
     
 if __name__ == "__main__":
-    # MeroshareBot().process_data()
-    # live_data = LtpExtractor().fetch_live_market()
-    # WaccCalculator().start_calulation(live_data=live_data)
-    # LedgerBalanceExtractor().extract_balance()
+    MeroshareBot().process_data()
+    live_data = LtpExtractor().fetch_live_market()
+    WaccCalculator().start_calulation(live_data=live_data)
+    LedgerBalanceExtractor().extract_balance()
 
-    # from holding_summary_with_bro import BroExtractor
-    # BroExtractor().extract_bro()
-    # DBUpdater().push_data_to_db()
+    from holding_summary_with_bro import BroExtractor
+    BroExtractor().extract_bro()
+    DBUpdater().push_data_to_db()
 
     from bro_summary_calc import BroSummaryExtractor
     BroSummaryExtractor().extract_bro_summary()
@@ -260,7 +260,7 @@ if __name__ == "__main__":
     
 
 
-    subprocess.Popen(["streamlit", "run", "streamlit\\login.py"], cwd=config.PROJECT_PATH)
+    # subprocess.Popen(["streamlit", "run", "streamlit\\login.py"], cwd=config.PROJECT_PATH)
 
 
 

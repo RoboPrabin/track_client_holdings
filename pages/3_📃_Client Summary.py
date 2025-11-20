@@ -1,0 +1,39 @@
+import streamlit as st
+import pandas as pd
+import sqlalchemy
+from config import config
+from utils import helper
+
+class BroSummaryPage:
+    def __init__(self):
+        helper.hide_login_page()
+        st.set_page_config(page_title="BRO Summary", layout='wide')
+
+
+    def render(self):
+        st.title("🙎🏻 Client Summary")
+        df = self.load_data()
+        df = helper.format_dataframe(df)
+        search_query = st.text_input("Search in table")
+
+        if search_query:
+            df = df[df.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
+
+        df.index += 1
+        st.dataframe(df, width='stretch')
+        # st.dataframe(df, width='stretch')
+
+
+    @st.cache_data(ttl=helper.default_ttl())
+    def load_data(_self):
+        engine = sqlalchemy.create_engine(helper.get_holding_engine())
+        df = pd.read_sql("SELECT * FROM client_summary", engine)
+        df.reset_index(drop=True, inplace=True)
+        df.index = df.index + 1  
+        return df
+
+
+
+# 🔄 Entry point
+if __name__ == "__main__":
+    BroSummaryPage().render()

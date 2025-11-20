@@ -24,8 +24,9 @@ class DBUpdater:
         return df
     
     def push_data_to_db(self):
-        engine = create_engine(helper.get_engine_connection_holding_db())
+        engine = create_engine(helper.get_holding_engine())
         df = pd.read_excel(config.OUTPUT_CLIENT_DATA_FILEPATH_FINAL)
         # df: pd.DataFrame = self.__create_columns()
+        df['bro'] = df['bro'].fillna("N/A")
         df.to_sql("holdings", engine, if_exists="replace", index=False)
         print("✅ Data successfully dumped into DB.")

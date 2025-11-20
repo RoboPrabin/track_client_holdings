@@ -10,14 +10,54 @@ import termcolor
 from datetime import datetime
 import streamlit as st
 from config import config
+from cryptography.fernet import Fernet
+
+def hide_login_page():
+    st.markdown("""
+    <style>
+        /* Hide the Login page (first item) forever */
+        section[data-testid="stSidebarNav"] li:nth-child(1) {
+            display: none !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+def default_ttl():
+    return 63
+
+def get_hero_role():
+    return ['MANAGER', 'ADMIN']
 
 
+def logout_if_unauthorized():
+    role = get_hero_role()
+    if not st.session_state['role'] in role:
+        st.error("You are not authorized to access this page.", icon=':material/warning:')
+        # if st.button("Go to login page"):
+        #     st.switch_page("Homepage.py")
+        st.stop()
+        
+# Load key from environment
+key = os.getenv("SECRET_KEY")
+if not key:
+    raise ValueError("SECRET_KEY not found in environment variables")
 
-def get_engine_connection_holding_db()->str:
+cipher = Fernet(key.encode())
+
+def encrypt_password(password: str) -> str:
+    encrypted = cipher.encrypt(password.encode())
+    return encrypted.decode()
+
+def decrypt_password(encrypted_password: str) -> str:
+    decrypted = cipher.decrypt(encrypted_password.encode())
+    return decrypted.decode()
+
+@st.cache_resource
+def get_holding_engine()->str:
     return f"postgresql+psycopg2://{config.postgresql_config['db_user']}:{config.postgresql_config['db_password']}@{config.postgresql_config['db_host']}:{config.postgresql_config['db_port']}/{config.postgresql_config['db_name']}"
 
-
-def get_engine_connection_intranet_db()->str:
+@st.cache_resource
+def get_intranet_engine()->str:
     return f"postgresql+psycopg2://{config.postgresql_config['db_user']}:{config.postgresql_config['db_password']}@{config.postgresql_config['db_host']}:{config.postgresql_config['db_port']}/{'trishakti_db'}"
 
 def hide_components():
@@ -57,6 +97,25 @@ def format_with_comma(x):
     if pd.api.types.is_numeric_dtype(x):
         return x.apply(lambda val: f"{val:,.0f}" if pd.notna(val) else "")
     return x
+
+
+def format_dataframe(df: pd.DataFrame):
+    df = df.rename(columns=camel_to_title)
+    
+    def add_comma(x):
+        return f"{x:,.2f}" if pd.notna(x) else ""
+    
+    # All numeric columns
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    
+    # Exclude "Boid" (case-insensitive & strip spaces)
+    cols_to_format = [col for col in numeric_cols if col.strip().lower() != "boid"]
+    
+    # Apply comma formatting only to selected columns
+    df[cols_to_format] = df[cols_to_format].map(add_comma)
+    
+    return df
+
 
 # SHOW MESSAGES __________________________________________________________________
 def show_message_box(title:str = "Demo purpose only", message:str = "Delete some data from summary report."):

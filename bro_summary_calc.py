@@ -29,7 +29,7 @@ class BroSummaryExtractor:
         })
 
         # Step 4: Connect to DB and fetch RM info
-        engine = create_engine(helper.get_engine_connection_intranet_db())
+        engine = create_engine(helper.get_intranet_engine())
         df_client_rm = pd.read_sql("SELECT client_code, rm_id FROM client_rm", engine)
         df_rm = pd.read_sql("SELECT u_id, rm_name, rm_fname FROM rm_tbl", engine)
 
@@ -55,7 +55,7 @@ class BroSummaryExtractor:
         # Step 7: Save to Excel
         output_path = r"D:\Trishakti\Projects\RPA\track_stock_price\data\output\bro_summary.xlsx"
         df_cleaned.to_excel(output_path, index=False)
-        engine_holding_db = create_engine(helper.get_engine_connection_holding_db())
+        engine_holding_db = create_engine(helper.get_holding_engine())
         # Step 8: Push to bro_summary table
         df_cleaned.to_sql("bro_summary", engine_holding_db, if_exists="replace", index=False)
 
