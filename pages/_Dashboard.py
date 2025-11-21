@@ -13,9 +13,9 @@ import navigation
 class Dashboard:
     def __init__(self):
         # st.set_page_config(page_title="Dashboard")
-        self.user = current_user()
-        st.set_page_config(page_title=f"Dashboard | {self.user['username'].upper()}",page_icon="🏠",layout="wide")
+        st.set_page_config(page_title=f"Dashboard |",page_icon="🏠",layout="wide")
         require_login()            # Redirect to login if not authenticated
+        self.user = current_user()
         navigation.render_sidebar()  # Sidebar menus
 
         self.df: pd.DataFrame = None
