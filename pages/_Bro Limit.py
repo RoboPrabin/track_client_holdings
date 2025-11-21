@@ -3,11 +3,14 @@ import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine, text
 from utils import helper
-
+from navigation import render_sidebar
 # 🔧 BRO Limit Manager Class
 class BroLimitManager:
     def __init__(self):
-        helper.hide_login_page()
+        # helper.hide_login_page()
+        st.set_page_config(page_title="Bro Limit", layout='wide', page_icon="🧑‍🦱")
+        helper.adjust_ui()
+        render_sidebar()
         self.engine = create_engine(helper.get_holding_engine())
 
     def _query(self, sql, params=None):
@@ -149,11 +152,6 @@ if role in ['MANAGER', 'ADMIN']:
 
     df.index += 1
     st.dataframe(df, width='stretch')
-
-    
-    
-    # df.index += 1
-    # st.dataframe(df, width='stretch')
 
 # 👤 Individual BRO View
 else:

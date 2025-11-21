@@ -12,6 +12,16 @@ import streamlit as st
 from config import config
 from cryptography.fernet import Fernet
 
+
+def adjust_ui():
+    st.markdown("""
+           <style>
+               div[data-testid="stVerticalBlock"]:not(section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"]) {
+                    margin-top: 0px !important;
+                }
+            </style>
+            """, unsafe_allow_html=True)
+
 def hide_login_page():
     st.markdown("""
     <style>

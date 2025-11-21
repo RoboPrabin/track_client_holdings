@@ -3,11 +3,14 @@ import pandas as pd
 import sqlalchemy
 from config import config
 from utils import helper
+from navigation import render_sidebar
+
 
 class BroSummaryPage:
     def __init__(self):
-        helper.hide_login_page()
-        st.set_page_config(page_title="BRO Summary", layout='wide')
+        helper.adjust_ui()
+        render_sidebar()
+        st.set_page_config(page_title="Client Summary", layout='wide', page_icon="📃")
 
 
     def render(self):

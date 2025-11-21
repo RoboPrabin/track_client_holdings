@@ -4,15 +4,19 @@ from sqlalchemy import create_engine, text
 from config import config
 from utils import helper
 # from auth_guard import require_role
-
+from navigation import render_sidebar
 
 class ManagerSummaryPage:
     def __init__(self):
-        helper.hide_login_page()
-        helper.logout_if_unauthorized()
+        st.set_page_config(page_title="Manager Summary", layout="wide", page_icon="👨‍💼")
+        helper.adjust_ui()
+        render_sidebar()
+        
+        # helper.hide_login_page()
+        # helper.logout_if_unauthorized()
 
     def render(self):
-        self.render_header()
+        st.title("🧑‍💼 Manager Summary")
         df = self.load_data()
         df = helper.format_dataframe(df)
         search_query = st.text_input("Search in table")
@@ -22,11 +26,6 @@ class ManagerSummaryPage:
 
         df.index += 1
         st.dataframe(df, width='stretch')
-
-    def render_header(self):
-        # if st.button("⬅️ Go to Dashboard"):
-        #     st.switch_page("pages/dashboard.py")
-        st.title("🧑‍💼 Manager Summary")
 
 
     def sync_limits_to_manager_summary(self):

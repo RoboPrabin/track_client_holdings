@@ -7,11 +7,13 @@ def render_sidebar():
     """
     Renders the sidebar menus based on login state and role.
     """
+    if not is_logged_in():
+        st.sidebar.page_link(page_url.login_url, label="Login", icon="🔐")
+        return
+    
+    user = current_user()
+    role = user.get("role")
 
-    # lt = st.sidebar.feedback(options='faces')
-    # user = current_user()
-    # print(str(current_user['username'].upper()))
-    # st.success(f"{lt}, {user['username'].upper()}")
     st.markdown("""
         <style>
             [data-testid="stSidebarCollapseButton"] {
@@ -20,76 +22,140 @@ def render_sidebar():
             }
         </style>
         """, unsafe_allow_html=True)
-    # st.sidebar.title("Menu")
-    # st.sidebar.image("https://trishakti.com.np/img/logo1.png",width=140)
+    st.markdown("""
+        <style>
+        /* Remove top gap */
+        section[data-testid="stSidebar"] > div:first-child {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        /* Also remove padding inside sidebar content wrapper */
+        section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    
+
     # st.sidebar.markdown(
-    # """
-    # <div style='text-align:center; margin-bottom:10px;'>
-    #     <img src='https://trishakti.com.np/img/logo1.png' width='100'>
+    #     f"""
+    #    <div style='text-align:center; padding: 20px 0 10px 0;'>
+    #     <div style='
+    #         width: 140px; 
+    #         height: 140px; 
+    #         margin: 0 auto; 
+    #         border-radius: 50%; 
+    #         overflow: hidden;
+    #         border: 3px solid #07850b;   
+    #         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    #     '>
+    #         <img src='https://trishakti.com.np/img/logo1.png' 
+    #              width='110' 
+    #              style='border-radius: 50%; display: block;margin-top:25px; margin-left:13px;'>
+    #     </div>
     # </div>
-    # <hr style='margin:30px 0 30px 0;'>
-    # """,
-    # unsafe_allow_html=True
+    #     <div style='text-align:center; margin:15px 0 25px; color:#444;'>
+    #         <div style='font-size:14px; color:#a6a6a6; margin-top:0px;'> {user['username'].upper()} | {user['role']}</div>
+    #     </div>
+    #     <hr style='margin: 10px 0 20px 0; border:0; border-top:1px solid #eee;'>
+    #     """,
+    #     unsafe_allow_html=True
     # )
-    # st.sidebar.markdown("---")
-    # st.sidebar.caption("-----")
-    # st.markdown("<hr></hr>", unsafe_allow_html=True)
 
-    if not is_logged_in():
-        st.sidebar.page_link(page_url.login_url, label="Login", icon="🔐")
-        return
 
-    user = current_user()
-    role = user.get("role")
-    
-    # Authenticated menus
-    st.sidebar.page_link(page_url.dashbord_url, label="Dashboard", icon="🏠")
 
-    # navigation.py (partial, inside render_sidebar)
-    if role in ["BRO", "MANAGER", "ADMIN"]:
-        st.sidebar.markdown("## Summary")  # Group header
-        st.sidebar.page_link(page_url.client_summary_url, label="Client", icon="📃")
-        st.sidebar.page_link(page_url.manager_summary_url, label="Manager", icon="👨‍💼")
-        # st.sidebar.button("Client Summary", key="client_summary_btn",
-                        # on_click=lambda: st.session_state.update({"current_page": page_url.client_summary_url}))
-        
-        if role in ["MANAGER", "ADMIN"]:
-            st.sidebar.markdown("## Limiter")  # Group header
-            st.sidebar.page_link(page_url.bro_limit_url, label="BR Officer", icon="🧑‍🦱")
-            st.sidebar.markdown("## Create")  # Group header
-            st.sidebar.page_link(page_url.create_app_user_url, label="App user", icon="➕")
-            # st.sidebar.button("Manager Summary", key="manager_summary_btn",
-            st.sidebar.page_link(page_url.meroshare_url, label="Meroshare account", icon="✨")
-                            # on_click=lambda: st.session_state.update({"current_page": page_url.manager_summary_url}))
-    
-        st.sidebar.markdown("## Feedback")  # Group header
-        st.sidebar.page_link(page_url.feedback_url, label="Ping", icon="💬")
-    # st.markdown("""_______""", unsafe_allow_html=True)
-    st.sidebar.page_link(page_url.login_url, label="Logout", icon="🏃")
-    # st.sidebar.page_link("pages/_Dashboard.py", label="Dashboard", icon="🏠")
-    # st.sidebar.page_link("pages/_Dashboard.py", label="Dashboard", icon="🏠")
-    # st.sidebar.page_link("pages/_Dashboard.py", label="Dashboard", icon="🏠")
-    # st.sidebar.page_link("pages/_Dashboard.py", label="Dashboard", icon="🏠")
 
-    # if role == "bro":
-    #     st.sidebar.page_link("4_🧑‍🦱_Bro Limit", label="BRO Summary")
-    # if role == "manager":
-    #     st.sidebar.page_link("5_👨‍💼_Manager Summary", label="Manager Summary")
-    # if role == "admin":
-    #     st.sidebar.page_link("6_➕_Create App User", label="Admin Panel")
+    st.sidebar.markdown(
+            f"""
+        <style>
+        /* Container */
+        .circle-wrapper {{
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            margin-top: -30px !important;
 
-    # Logout
-    # if st.sidebar.button("Logout"):
-    #     logout_user()
-    #     st.switch_page(page_url.login_url)
-    
-    with st.sidebar:
-    # ... your other sidebar items ...
+        }}
 
-        st.markdown("""<div style="margin-top: 100px;"></div>""", unsafe_allow_html=True)  # spacer
-        st.markdown(
-            "<p style='text-align: center; color: gray; font-size: 12px;'>"
-            "© Trishakti Securities Limited.<br>All Rights Reserved."
-            "</p>",
+        /* Rotating Border */
+        .circle-wrapper::before {{
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 146px;
+            height: 146px;
+            border-radius: 50%;
+            padding: 3px;
+            background: conic-gradient(#9e9b9e, #15522c ,#04b347);
+            -webkit-mask: 
+                radial-gradient(farthest-side, transparent calc(100% - 3px), black 0);
+            mask: 
+                radial-gradient(farthest-side, transparent calc(100% - 3px), black 0);
+            animation: spin 3s linear infinite;
+            z-index: 0;
+        }}
+
+        /* Actual Image */
+        .circle-img {{
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }}
+
+        @keyframes spin {{
+            from {{ transform: rotate(0deg); }}
+            to {{ transform: rotate(360deg); }}
+        }}
+        </style>
+
+        <div style='text-align:center; padding: 20px 0 10px 0;'>
+            <div class="circle-wrapper">
+                <div class="circle-img">
+                    <img src='https://trishakti.com.np/img/logo1.png' 
+                        width='110' 
+                        style='border-radius: 50%; display: block;margin-top:30px; margin-left:15px;' />
+                </div>
+            </div>
+        </div>
+
+        <div style='text-align:center; margin:15px 0 25px; color:#444;'>
+            <div style='font-size:14px;font-weight: bold; color:#a6a6a6; margin-top:0px;'> 
+                <span style=''>{user['username'].upper()}</span> | {user['role']}
+            </div>
+        </div>
+
+        <hr style='margin: 10px 0 20px 0; border:0; border-top:1px solid #eee;'>
+        """,
             unsafe_allow_html=True
         )
+
+    
+
+    # Authenticated menus
+    st.sidebar.page_link(page_url.dashbord_url, label="‎‎ ‎ Dashboard", icon="🏠")
+
+    if role in ["BRO", "MANAGER", "ADMIN"]:
+        st.sidebar.page_link(page_url.client_summary_url, label="‎‎ ‎ Client Summary", icon="📃")
+
+        
+        if role in ["MANAGER", "ADMIN"]:
+            st.sidebar.page_link(page_url.manager_summary_url, label="‎‎ ‎ Manager Summary", icon="👨‍💼")
+        if role == "BRO":
+            st.sidebar.page_link(page_url.bro_limit_url, label="‎‎ ‎ Client Limit", icon="🧑‍🦱")
+        else:
+            st.sidebar.page_link(page_url.bro_limit_url, label="‎‎ ‎ Bro Limit", icon="🧑‍🦱")
+            st.sidebar.page_link(page_url.meroshare_url, label="‎‎ ‎ Meroshare", icon="✨")
+            st.sidebar.page_link(page_url.create_app_user_url, label="‎‎ ‎ Create App user", icon="➕")
+    
+        st.sidebar.page_link(page_url.feedback_url, label="‎‎ ‎ Feedback", icon="💬")
+    st.sidebar.page_link(page_url.logout_url, label="‎‎ ‎ Logout", icon="🏃")
+
+    
